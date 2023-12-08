@@ -1,5 +1,4 @@
 #include<iostream>
-#include<fstream>
 #include<string.h>
 #include<stdlib.h>
 #include<stdio.h>
@@ -24,6 +23,7 @@ class PC{
 
 void menu();
 void registrar_pc();
+void ver_todos();
 
 int main(){
 	menu();
@@ -64,56 +64,35 @@ void menu()
 
 void registrar_pc(){
 
-	FILE *file;
-	PC nuevo, lista[50];
+	FILE *bin, *texto;
+	PC nuevo, comparar;
+	
 	char r;
 
-	if (((file = fopen("Archivo Datos.txt","a+b"))==NULL))
+	if (((bin = fopen("Archivo Binario","a+b"))==NULL) ||((texto = fopen("Archivo Datos","a+b"))==NULL))
 	{
-		cout<<"No se logró abrir el archivo";
-		exit(0);
+		cout<<"No se logró abrir el archivo"<<endl;
+		system("pause");
 	}
-
-	int encontro=1,i,ultimo,res;
 	
-	rewind(file); //mueve el puntero del archivo al principio del archivo
-	
-	i=0;
-	while(!feof(file)){                                  //CON ESTE WHILE, SE VA A RECORRER TODO EL ARCHIVO, USAMOS LA FUNCION FEOF PARA RECORRER, LA CUAL RETORNA UN VALOR DISTINTO A CERO SI Y SOLO SI EL INDICADOR A LLEGADO AL FINAL DEL ARCHIVO
-		if(fread(&nuevo, sizeof(PC), 1, file)){			//LA FUNCION FREAD, DEVUELVE EL NUMERO DE ELEMENTOS LEIDOS EN EL ARCHIVO, POR LO TANTO ESTE NUMERO NOS SIRVE PARA INDICARLE AL ARRAY CUANTAS POSICIONES TENDR�
-			lista[i]=nuevo;                             //TODA LA INFORMACION ALMACENADA EN NUEVO SE LA GUARDARA EN EL ARRAY LISTA..
-			i++;                                        //.. ESTO SE LO HACE PARA LUEGO COMPARAR
-		}                                               
-	}
-	res=i;
-	
+	rewind(bin); //mueve el puntero del archivo al principio del archivo
 	fflush(stdin);
-	cout<<"Ingrese el nombre del PC: "<<endl;
-	
-	
-	do{
-		gets(nuevo.nombre);
-		ultimo = res-1;
-		encontro = 1;
-		i=0;
-		while (i<=ultimo && encontro==1){
-			if (strcmp(lista[i].nombre,nuevo.nombre)==0)
-			{
-				encontro=0;
-				i++;
-			}
-		}
-		if (i<=ultimo){
-		cout<<"Esta PC ya esta registrada.";
-		}
-		else{
-			cout<<"                                               ";
-		}
-		
-		
-	} while (i<=ultimo);
-	
 
+	cout<<"Ingrese el nombre del PC: "<<endl;
+	gets(nuevo.nombre);
+
+	fread(&comparar, sizeof(PC), 1, bin);
+	
+	while (!feof(bin))
+	{
+		if(strcmp(nuevo.nombre, comparar.nombre) == 0){
+		cout<<"Esta PC ya esta registrada. Ingrese nuevamente: "<<endl;
+		gets(nuevo.nombre);}
+		
+		fread(&comparar, sizeof(PC), 1, bin);
+	}
+	
+	
 	cout<<"\nA continuacion ingrese los datos de los componentes"<<endl;
 
 	cout<<"\nProcesador "<<endl;
@@ -142,19 +121,62 @@ void registrar_pc(){
 	cout<<"Modelo: "<<endl;
 
 	do{
-		cout<<"Registrar Nuevo Cliente? Si[s] / No [n]: "; 
+		cout<<"Registrar Nuevo Cliente? Si[s] / No [n]: \n"; 
 		r=getch();
 	}while(r!='S' && r!='s' && r!='N' && r!='n');
 
 	if (r=='s' || r=='S') { 
 
+		//AQUI SE GUARDAN LOS DATOS EN EL ARCHIVO LLAMADO ARCHIVO BINARIO , LA FUNCI�N FWRITE PERMITE GUARDAR INFORMACI�N CONTENIDA EN LAS VARIABLES A UN ARCHIVO DESTINO
+		fwrite(&nuevo, sizeof(PC), 1, bin);
+
 		//AQUI SE GUARDAN LOS DATOS EN EL ARCHIVO DE TEXTO LLAMADO ARCHIVO DATOS, LA FUNCION FPRINTF GUARDA INFORMACION EN LAS VARIABLES                                                          
-		fprintf(file, "\n %s %s %s %s %s %s\n", nuevo.nombre, nuevo.procesador, nuevo.ram, nuevo.rom, nuevo.fuente_p, nuevo.placa_b);            
+		fprintf(texto, "%s \n", nuevo.nombre);
+		fprintf(texto, "%s %s %s %s %s\n", nuevo.procesador, nuevo.ram, nuevo.rom, nuevo.fuente_p, nuevo.placa_b);            
 		cout<<"Cliente Registrado.";
+	}
+	else
+	{
+		cout<<"Cliente NO Registrado.";
+	}
+	
 
 	system("pause");
-	fclose(file);
+	fclose(bin);
+	fclose(texto);
 	menu();
+}
+
+void ver_todos(){
+
+	FILE *bin;
+	PC computadora;
+
+	if(((bin = fopen("Archivo Datos","a+b"))==NULL)){
+		cout<<"No se logró abrir el archivo"<<endl;
+		system("pause");
+		exit(0);}
+
+	fread(&computadora, sizeof(PC), 1, bin);
+	
+	while (!feof(bin))
+	{
+
+		printf("%s %s %s %s %s %s\n", computadora.nombre, computadora.procesador, computadora.rom,
+				computadora.ram, computadora.fuente_p, computadora.placa_b);
+        
+		/*cout<<computadora.nombre<<endl;
+		cout<<computadora.procesador<<endl;
+		cout<<computadora.rom<<endl;
+		cout<<computadora.ram<<endl;
+		cout<<computadora.fuente_p<<endl;
+		cout<<computadora.placa_b<<endl;
+	*/
+		fread(&computadora, sizeof(PC), 1, bin);
+	
 	}
 
+	system("pause");
+	fclose(bin);
+	menu();
 }
