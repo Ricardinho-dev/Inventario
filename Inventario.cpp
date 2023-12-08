@@ -56,7 +56,17 @@ void menu()
     case 1:
         registrar_pc();
         break;
-    
+    case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		ver_todos(); 
+		break;
+	case 6:
+		break;
     default:
         break;
     }
@@ -152,30 +162,25 @@ void ver_todos(){
 	FILE *bin;
 	PC computadora;
 
-	if(((bin = fopen("Archivo Datos","a+b"))==NULL)){
+	if(((bin = fopen("Archivo Binario","r+b"))==NULL)){
 		cout<<"No se logró abrir el archivo"<<endl;
 		system("pause");
 		exit(0);}
 
 	fread(&computadora, sizeof(PC), 1, bin);
 	
+	
 	while (!feof(bin))
 	{
-
-		printf("%s %s %s %s %s %s\n", computadora.nombre, computadora.procesador, computadora.rom,
+		cout<<"\n--------------"<<endl;
+		printf("%s\n", computadora.nombre);
+		cout<<"--------------"<<endl;
+		
+		printf("%s\n %s\n %s\n %s\n %s\n", computadora.procesador, computadora.rom,
 				computadora.ram, computadora.fuente_p, computadora.placa_b);
         
-		/*cout<<computadora.nombre<<endl;
-		cout<<computadora.procesador<<endl;
-		cout<<computadora.rom<<endl;
-		cout<<computadora.ram<<endl;
-		cout<<computadora.fuente_p<<endl;
-		cout<<computadora.placa_b<<endl;
-	*/
 		fread(&computadora, sizeof(PC), 1, bin);
-	
 	}
-
 	system("pause");
 	fclose(bin);
 	menu();
