@@ -23,6 +23,7 @@ class PC{
 
 void menu();
 void registrar_pc();
+void consulta();
 void ver_todos();
 
 int main(){
@@ -57,6 +58,7 @@ void menu()
         registrar_pc();
         break;
     case 2:
+		consulta();
 		break;
 	case 3:
 		break;
@@ -76,8 +78,9 @@ void registrar_pc(){
 
 	FILE *bin, *texto;
 	PC nuevo, comparar;
-	
 	char r;
+
+	system("cls");
 
 	if (((bin = fopen("Archivo Binario","a+b"))==NULL) ||((texto = fopen("Archivo Datos","a+b"))==NULL))
 	{
@@ -157,13 +160,62 @@ void registrar_pc(){
 	menu();
 }
 
+void consulta(){
+
+	FILE *bin;
+	PC consulta, computadora;
+	int aux=1;
+
+	system("cls");
+
+	if ((bin=fopen("Archivo Binario", "a+b"))==NULL)
+	{
+		cout<<"No se logro abrir el archivo.";
+		
+	}
+
+	cout<<"Ingrese el nombre del PC que desee ver: ";
+	fflush(stdin);
+	gets(consulta.nombre);
+	
+	fread(&computadora, sizeof(PC), 1, bin);
+	
+	while (!feof(bin))
+	{
+		if(strcmp(consulta.nombre, computadora.nombre) == 0){
+		
+		cout<<"\n--------------"<<endl;
+		printf("%s\n", computadora.nombre);
+		cout<<"--------------"<<endl;
+		
+		printf("%s\n %s\n %s\n %s\n %s\n\n", computadora.procesador, computadora.rom,
+				computadora.ram, computadora.fuente_p, computadora.placa_b);
+		aux--;
+		}
+		fread(&computadora, sizeof(PC), 1, bin);
+	}
+	
+	if(aux==1){ 
+			cout<<"\n\n\n----------------------------------------------------------------------------------"<<endl;
+			cout<<"El PC no esta registrado. "; 
+			system("pause");
+			exit(0);
+		}
+
+	system("pause");
+	fclose(bin);
+	menu();
+}
+
 void ver_todos(){
 
 	FILE *bin;
 	PC computadora;
 
+	system("cls");
+
 	if(((bin = fopen("Archivo Binario","r+b"))==NULL)){
-		cout<<"No se logró abrir el archivo"<<endl;
+		cout<<"No se logró abrir el archivo."<<endl;
 		system("pause");
 		exit(0);}
 
@@ -181,6 +233,7 @@ void ver_todos(){
         
 		fread(&computadora, sizeof(PC), 1, bin);
 	}
+
 	system("pause");
 	fclose(bin);
 	menu();
